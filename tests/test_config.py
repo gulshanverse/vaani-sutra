@@ -1,5 +1,7 @@
 import os
 import sys
+from unittest import mock
+
 import pytest
 
 from config import settings
@@ -28,10 +30,25 @@ def test_get_videosdk_auth_from_token():
     os.environ.pop("VIDEOSDK_AUTH_TOKEN", None)
 
 
-def test_get_videosdk_auth_from_api_secret():
-    os.environ.pop("VIDEOSDK_AUTH_TOKEN", None)
-    os.environ["VIDEOSDK_API_KEY"] = "api"
-    os.environ["VIDEOSDK_SECRET_KEY"] = "secret"
-    assert settings.get_videosdk_auth() == "api:secret"
-    os.environ.pop("VIDEOSDK_API_KEY", None)
-    os.environ.pop("VIDEOSDK_SECRET_KEY", None)
+def test_get_videosdk_auth_from_api_secret_without_resolver(monkeypatch):
+    monkeypatch.delenv("VIDEOSDK_AUTH_TOKEN", raising=False)
+    monkeypatch.setenv("VIDEOSDK_API_KEY", "api")
+    monkeypatch.setenv("VIDEOSDK_SECRET_KEY", "secret")
+
+    with mock.patch("config.settings.resolve_videosdk_auth_token", None):
+        assert settings.get_videosdk_auth() == "api:secret"
+
+    monkeypatch.delenv("VIDEOSDK_API_KEY", raising=False)
+    monkeypatch.delenv("VIDEOSDK_SECRET_KEY", raising=False)
+
+
+def test_get_videosdk_auth_uses_resolver(monkeypatch):
+    monkeypatch.delenv("VIDEOSDK_AUTH_TOKEN", raising=False)
+    monkeypatch.setenv("VIDEOSDK_API_KEY", "api")
+    monkeypatch.setenv("VIDEOSDK_SECRET_KEY", "secret")
+
+    with mock.patch("config.settings.resolve_videosdk_auth_token", return_value="resolved-token"):
+        assert settings.get_videosdk_auth() == "resolved-token"
+
+    monkeypatch.delenv("VIDEOSDK_API_KEY", raising=False)
+    monkeypatch.delenv("VIDEOSDK_SECRET_KEY", raising=False)

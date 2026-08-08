@@ -3,6 +3,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+try:
+    from videosdk.agents.utils import resolve_videosdk_auth_token
+except Exception:
+    resolve_videosdk_auth_token = None
+
 # Make .env optional: try to load if python-dotenv is available
 try:
     from dotenv import load_dotenv
@@ -47,11 +52,16 @@ def validate_google_api_key(required: bool = True):
 def get_videosdk_auth():
     """Return VideoSDK auth token resolved from environment or None.
 
-    Checks `VIDEOSDK_AUTH_TOKEN` first, then `VIDEOSDK_API_KEY` + `VIDEOSDK_SECRET_KEY`.
+    Checks `VIDEOSDK_AUTH_TOKEN` first, then `VIDEOSDK_API_KEY` + `VIDEOSDK_SECRET_KEY`
+    using the installed VideoSDK token resolver when available.
     """
     token = os.getenv("VIDEOSDK_AUTH_TOKEN")
     if token and token.strip():
         return token.strip()
+
+    if resolve_videosdk_auth_token is not None:
+        return resolve_videosdk_auth_token()
+
     api_key = os.getenv("VIDEOSDK_API_KEY")
     secret = os.getenv("VIDEOSDK_SECRET_KEY")
     if api_key and secret:

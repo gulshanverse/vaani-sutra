@@ -67,9 +67,51 @@ GOOGLE_API_KEY=your_google_api_key_here
 VIDEOSDK_AUTH_TOKEN=your_videosdk_auth_token_here
 VIDEOSDK_API_KEY=your_videosdk_api_key_here
 VIDEOSDK_SECRET_KEY=your_videosdk_secret_key_here
+VAANI_SUTRA_PLAYGROUND=true
 ```
 
 The application checks required credentials at startup and exits cleanly if missing.
+
+## Local Voice Testing / Playground
+
+Vaani Sutra can be tested locally through the VideoSDK browser Playground when `VAANI_SUTRA_PLAYGROUND` is enabled.
+
+Required environment variables:
+
+```env
+GOOGLE_API_KEY=your_google_api_key_here
+VIDEOSDK_AUTH_TOKEN=your_videosdk_auth_token_here
+```
+
+Alternative VideoSDK credential pair:
+
+```env
+VIDEOSDK_API_KEY=your_videosdk_api_key_here
+VIDEOSDK_SECRET_KEY=your_videosdk_secret_key_here
+```
+
+Enable Playground mode before startup:
+
+```powershell
+set-item env:VAANI_SUTRA_PLAYGROUND true
+```
+
+Then activate the venv and start the agent:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python main.py
+```
+
+When Playground mode is enabled, the application should print the browser Playground URL if the installed VideoSDK SDK supports it. Open that URL in your browser, allow microphone permission, join the session, speak to Vaani Sutra, and verify the agent responds with audio. Watch the Python terminal for startup, session, and job logs.
+
+## Troubleshooting
+
+- `ERROR: GOOGLE_API_KEY is not configured.` — ensure `GOOGLE_API_KEY` is set in `.env` or the environment.
+- `No VideoSDK auth available.` — set `VIDEOSDK_AUTH_TOKEN`, or both `VIDEOSDK_API_KEY` and `VIDEOSDK_SECRET_KEY`.
+- Worker registered but no active jobs — verify `VAANI_SUTRA_PLAYGROUND=true`, confirm the terminal shows a Playground URL, and ensure a browser actually joined the session.
+- Microphone permission issues — allow microphone access in the browser and refresh the Playground page if needed.
+- Playground URL not appearing — confirm `VAANI_SUTRA_PLAYGROUND=true`, valid VideoSDK auth, and that the VideoSDK SDK version supports playground mode.
 
 ## Running Locally
 

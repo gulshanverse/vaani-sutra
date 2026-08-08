@@ -1,3 +1,4 @@
+import os
 import asyncio
 import logging
 from dataclasses import dataclass
@@ -24,6 +25,8 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class RuntimeConfig:
     google_api_key: str
+    videosdk_auth: str
+    playground: bool = False
 
 
 runtime_config: Optional[RuntimeConfig] = None
@@ -68,33 +71,65 @@ async def start_session(context: JobContext) -> None:
 
 
 def make_context() -> JobContext:
-    return JobContext(room_options=RoomOptions())
+    if runtime_config is None:
+        raise RuntimeError("Runtime configuration is not initialized")
+
+    ro = RoomOptions(
+        auth_token=runtime_config.videosdk_auth,
+        playground=runtime_config.playground,
+        join_meeting=True,
+    )
+    return JobContext(room_options=ro)
 
 
 def build_worker_job() -> WorkerJob:
+    if runtime_config is None:
+        raise RuntimeError("Runtime configuration is not initialized")
+
     return WorkerJob(
         entrypoint=start_session,
         jobctx=make_context,
         options=Options(
             agent_id="VaaniSutraSupportAgent",
-            register=True,
+            register=not runtime_config.playground,
             max_processes=10,
             host="localhost",
             port=8081,
+            auth_token=runtime_config.videosdk_auth,
         ),
     )
+
+
+def _parse_truthy(env_val: Optional[str]) -> bool:
+    if not env_val:
+        return False
+    return env_val.strip().lower() in ("1", "true", "yes", "on")
 
 
 def main() -> int:
     global runtime_config
 
     try:
-        google_api_key, _ = ensure_credentials_or_raise()
-        runtime_config = RuntimeConfig(google_api_key=google_api_key)
+        google_api_key, vsdk_auth = ensure_credentials_or_raise()
+        playground_flag = _parse_truthy(os.getenv("VAANI_SUTRA_PLAYGROUND", "false"))
 
-        logger.info("Starting Vaani Sutra Voice Agent...")
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        runtime_config = RuntimeConfig(
+            google_api_key=google_api_key,
+            videosdk_auth=vsdk_auth,
+            playground=playground_flag,
+        )
+
+        if playground_flag:
+            logger.info("========================================")
+            logger.info("VAANI SUTRA LOCAL VOICE TEST")
+            logger.info("========================================")
+            logger.info("Playground mode enabled. Starting local browser test flow.")
+
+        logger.info("Starting Vaani Sutra Voice Agent... (playground=%s)", playground_flag)
+        logger.info(
+            "Worker execution mode: %s",
+            "direct playground" if playground_flag else "backend registration",
+        )
 
         job = build_worker_job()
         job.start()
@@ -105,12 +140,6 @@ def main() -> int:
     except Exception as error:
         logger.error("Startup failed: %s", error)
         return 1
-    finally:
-        try:
-            if loop is not None and not loop.is_closed():
-                loop.close()
-        except Exception:
-            pass
 
 
 if __name__ == "__main__":
