@@ -1,4 +1,5 @@
 import logging
+import os
 
 
 def configure_logging(level: str = "INFO"):
@@ -17,5 +18,6 @@ def configure_logging(level: str = "INFO"):
         fh.setFormatter(logging.Formatter(log_format))
         logging.getLogger().addHandler(fh)
     except Exception:
-        # If file logging can't be configured, continue with console logging only
-        logging.getLogger().warning("Could not configure file logging; continuing with console only")
+        logging.getLogger().warning(
+            "Could not configure file logging; continuing with console only"
+        )

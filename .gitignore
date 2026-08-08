@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Environment files
+.env
+.env.*
+
 # C extensions
 *.so
 
@@ -28,17 +32,21 @@ var/
 .venv/
 venv/
 
-# VS Code
-.vscode/
-
-# macOS
-.DS_Store
-.env
-.venv/
-__pycache__/
-*.py[cod]
+# Testing
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Logs
 *.log
+logs/
+
+# IDE files
+.vscode/
 .idea/
+
+# macOS
+.DS_Store
+
+# Misc
+.git_backup/

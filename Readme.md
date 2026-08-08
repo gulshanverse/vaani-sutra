@@ -1,155 +1,134 @@
-# GODIMS AI Voice Support Agent (demo)
+# Vaani Sutra — वाणी सूत्र
 
-This repository contains a demo AI voice support agent. To make the project runnable
-without external binary dependencies during development, the `videosdk` interfaces
-are provided as local stubs. The agent can run in an offline/demo mode or be
-extended to integrate with real VideoSDK and Gemini Realtime APIs.
+**Where Intelligence Finds Its Voice.**
 
----
+Vaani Sutra is a real-time AI voice support agent designed to connect customer conversations to Google Gemini Realtime through VideoSDK agents. It is built for multilingual customer support, voice-based interaction, and a production-ready environment with secure configuration handling.
+
+## What is Vaani Sutra?
+
+Vaani Sutra combines:
+- Voice-first customer support via VideoSDK
+- Google Gemini Realtime for AI responses
+- Secure environment configuration via `python-dotenv`
+- Structured voice agent startup and graceful shutdown
+
+"Vaani" means voice, speech, or expression. "Sutra" means connection, thread, or guiding principle. Together, Vaani Sutra is the voice connection layer for real-time AI support.
+
+## Architecture
+
+- `main.py` — application entrypoint and VideoSDK job startup
+- `config/settings.py` — environment loading and credential validation
+- `utils/logging_setup.py` — structured logging and optional file logging
+- `run_and_watch.py` — helper watcher to restart the agent when credentials become available
 
 ## Features
 
-- Real-time AI voice conversation
-- English & Hindi language support
-- Professional, human-like customer support
-- Service and pricing information on demand
-- Automated lead collection (Name, Email, Phone, Budget, Service)
-- Automatic call greeting and closing
+- Real-time voice agent implementation using VideoSDK
+- Gemini Realtime audio model integration
+- Secure credentials validation and startup failure handling
+- Graceful shutdown on keyboard interrupt or startup error
+- Unit tests for config and startup behavior
 
----
+## Technology Stack
 
-## Tech Stack
+- Python 3.12
+- VideoSDK Agents
+- Google Gemini Realtime
+- python-dotenv
+- pytest for unit testing
 
-| Component | Technology |
-|---|---|
-| Language | Python 3.11+ |
-| Voice Agent Framework | VideoSDK Agents |
-| AI Model | Google Gemini Realtime API |
-| Concurrency | AsyncIO |
-| Config Management | python-dotenv |
+## Installation
 
----
+1. Create a fresh Python 3.12 virtual environment:
+
+```powershell
+py -3.12 -m venv .venv
+```
+
+2. Activate the environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+3. Upgrade pip and install dependencies:
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and replace placeholder values:
+
+```env
+GOOGLE_API_KEY=your_google_api_key_here
+VIDEOSDK_AUTH_TOKEN=your_videosdk_auth_token_here
+VIDEOSDK_API_KEY=your_videosdk_api_key_here
+VIDEOSDK_SECRET_KEY=your_videosdk_secret_key_here
+```
+
+The application checks required credentials at startup and exits cleanly if missing.
+
+## Running Locally
+
+Once credentials are available:
+
+```powershell
+python main.py
+```
+
+Use the watcher when credentials may become available later:
+
+```powershell
+python run_and_watch.py
+```
+
+## Testing
+
+Run unit tests with pytest:
+
+```powershell
+python -m pytest
+```
 
 ## Project Structure
 
 ```text
-godims-voice-agent/
+AI-Voice-Support-Agent/
+├── config/
+│   └── settings.py
+├── tests/
+│   ├── test_config.py
+│   └── test_main.py
+├── utils/
+│   └── logging_setup.py
 ├── main.py
-├── .env
+├── run_and_watch.py
 ├── requirements.txt
+├── requirements-lock.txt
+├── .env.example
+├── .gitignore
 └── README.md
 ```
 
----
+## Security
 
-## Environment Variables
+- `.env` is excluded from Git via `.gitignore`
+- Secrets are validated at startup, not logged
+- `.env.example` contains placeholders only
+- The repository has no committed `.env` file or API keys
 
-Create a `.env` file in the project root:
+## Troubleshooting
 
-```env
-GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
-```
+- `ERROR: GOOGLE_API_KEY is not configured.` — ensure `.env` or the environment provides the key
+- `No VideoSDK auth available.` — set `VIDEOSDK_AUTH_TOKEN`, or `VIDEOSDK_API_KEY` and `VIDEOSDK_SECRET_KEY`
+- If startup fails due to dependency errors, confirm the virtual environment is Python 3.12 and dependencies are installed from `requirements.txt`
 
----
+## Future Roadmap
 
-## Dependencies
-
-`requirements.txt` (pinned):
-
-```txt
-python-dotenv==1.0.0
-```
-
----
-
-## Setup Guide
-
-### 1. Create a Virtual Environment
-
-**Windows**
-```bash
-python -m venv .venv
-```
-
-**macOS / Linux**
-```bash
-python3 -m venv .venv
-```
-
-### 2. Activate the Virtual Environment
-
-**Windows**
-```bash
-.venv\Scripts\activate
-```
-
-**macOS / Linux**
-```bash
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the Agent
-
-Provide credentials in `.env` (or environment):
-
-```
-VIDEOSDK_AUTH_TOKEN=YOUR_VIDEOSDK_AUTH_TOKEN
-GOOGLE_API_KEY=YOUR_GOOGLE_GEMINI_API_KEY
-```
-
-Start the agent watcher which will wait for credentials and launch automatically:
-
-```bash
-python run_and_watch.py
-```
-
-Or run directly once credentials are present:
-
-```bash
-python main.py
-```
-
-**macOS / Linux**
-```bash
-python3 main.py
-```
-
----
-
-## Workflow
-
-```text
-Customer Call
-      │
-      ▼
-VideoSDK Agent
-      │
-      ▼
-Gemini Realtime API
-      │
-      ▼
-Voice Response
-      │
-      ▼
-Customer Support
-      │
-      ▼
-Lead Collection
-```
-
----
-
-## Agent Responsibilities
-
-1. Greet customers professionally
-2. Ask for preferred language (English / Hindi)
-3. Explain GODIMS services
-4. Share pricing and project timelines
-5. Collect customer requirements and contact details
-6. End the call politely
+- Add structured conversation state and intent handling
+- Support additional Gemini voice models and languages
+- Add integration test suite for VideoSDK + Gemini runtime
+- Improve logging to include request IDs and observability

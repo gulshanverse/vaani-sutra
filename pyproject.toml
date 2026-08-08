@@ -3,8 +3,13 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ai-voice-support-agent"
+name = "vaani-sutra"
 version = "0.1.0"
-description = "Demo AI voice support agent (VideoSDK stubbed for local runs)"
-authors = [ { name = "AI Maintainer" } ]
-requires-python = ">=3.11"
+description = "Vaani Sutra real-time AI voice support agent using VideoSDK and Google Gemini Realtime"
+authors = [ { name = "Gulshan Kumar" } ]
+requires-python = ">=3.12"
+keywords = ["voice", "AI", "VideoSDK", "Gemini", "support"]
+
+[project.urls]
+Homepage = "https://github.com/gulshanverse/vaani-sutra"
+Repository = "https://github.com/gulshanverse/vaani-sutra"
