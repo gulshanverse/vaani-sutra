@@ -1,0 +1,8 @@
+videosdk-agents==1.0.25
+videosdk==0.3.6
+videosdk-plugins-google==1.0.25
+mcp==1.29.0
+python-dotenv==1.2.2
+google-genai==2.17.0
+aiohttp==3.14.3
+httpx==0.28.1
