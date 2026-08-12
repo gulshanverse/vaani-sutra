@@ -4,6 +4,8 @@
 
 Vaani Sutra is a real-time AI voice support agent designed to connect customer conversations to Google Gemini Realtime through VideoSDK agents. It is built for multilingual customer support, voice-based interaction, and a production-ready environment with secure configuration handling.
 
+The project now also includes real local capabilities for live weather, configurable web search, and persistent memory through the Vaani Sutra tool architecture.
+
 ## What is Vaani Sutra?
 
 Vaani Sutra combines:
@@ -28,6 +30,9 @@ Vaani Sutra combines:
 - Secure credentials validation and startup failure handling
 - Graceful shutdown on keyboard interrupt or startup error
 - Unit tests for config and startup behavior
+- Live weather lookup through Open-Meteo
+- Configurable current-information web search provider
+- SQLite-backed persistent memory with session and user scope
 
 ## Technology Stack
 
@@ -67,6 +72,8 @@ GOOGLE_API_KEY=your_google_api_key_here
 VIDEOSDK_AUTH_TOKEN=your_videosdk_auth_token_here
 VIDEOSDK_API_KEY=your_videosdk_api_key_here
 VIDEOSDK_SECRET_KEY=your_videosdk_secret_key_here
+VAANI_SUTRA_SEARCH_PROVIDER=
+VAANI_SUTRA_SEARCH_API_KEY=
 VAANI_SUTRA_PLAYGROUND=true
 ```
 
@@ -104,6 +111,28 @@ python main.py
 ```
 
 When Playground mode is enabled, the application should print the browser Playground URL if the installed VideoSDK SDK supports it. Open that URL in your browser, allow microphone permission, join the session, speak to Vaani Sutra, and verify the agent responds with audio. Watch the Python terminal for startup, session, and job logs.
+
+## Live Weather
+
+Weather uses Open-Meteo for both geocoding and current conditions. The tool resolves a location to coordinates and returns current temperature, apparent temperature, precipitation, wind speed, condition, timezone, and observation timestamp.
+
+If the provider cannot resolve the location or the service is unavailable, the tool returns a structured failure and Vaani will explain that live weather data is unavailable rather than guessing.
+
+## Web Search
+
+Web search is provider-based. Set `VAANI_SUTRA_SEARCH_PROVIDER=brave` and `VAANI_SUTRA_SEARCH_API_KEY=<token>` to enable live search through the Brave Search API.
+
+If no provider is configured, the tool returns `NOT_CONFIGURED` and Vaani will state that live search is not currently available.
+
+## Persistent Memory
+
+Vaani Sutra uses a local SQLite memory store for session-scoped and user-scoped memories.
+
+- Session memory is isolated by `session_id`.
+- Persistent memory is isolated by `application_id` and `user_id`.
+- Memory creation is explicit; the system does not persist arbitrary user text by default.
+- Sensitive values such as passwords, API keys, tokens, and secrets are rejected by policy.
+- Users can remember, recall, forget, and list memories through the tool layer.
 
 ## Troubleshooting
 
@@ -168,9 +197,8 @@ AI-Voice-Support-Agent/
 - `No VideoSDK auth available.` — set `VIDEOSDK_AUTH_TOKEN`, or `VIDEOSDK_API_KEY` and `VIDEOSDK_SECRET_KEY`
 - If startup fails due to dependency errors, confirm the virtual environment is Python 3.12 and dependencies are installed from `requirements.txt`
 
-## Future Roadmap
+## Remaining Limitations
 
-- Add structured conversation state and intent handling
-- Support additional Gemini voice models and languages
-- Add integration test suite for VideoSDK + Gemini runtime
-- Improve logging to include request IDs and observability
+- Live search requires a configured external provider such as Brave Search.
+- Memory is local to the machine unless a different store is implemented later.
+- Additional live data sources such as news feeds or stock prices are not yet included.

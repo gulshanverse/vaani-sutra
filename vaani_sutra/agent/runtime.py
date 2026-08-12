@@ -65,6 +65,20 @@ class AgentRuntime:
         require_confirmation: bool = False,
     ) -> ToolExecutionResult:
         session = self.get_session(session_id)
+        merged_arguments = dict(arguments)
+        try:
+            tool = self.registry.get(tool_name)
+        except KeyError:
+            return self.executor.execute(tool_name, merged_arguments)
+
+        if "application_id" in tool.input_schema and "application_id" not in merged_arguments:
+            merged_arguments["application_id"] = session.application_id
+        if "user_id" in tool.input_schema and "user_id" not in merged_arguments:
+            merged_arguments["user_id"] = session.user_id
+        if "session_id" in tool.input_schema and "session_id" not in merged_arguments:
+            merged_arguments["session_id"] = session.session_id
+        if "locale" in tool.input_schema and "locale" not in merged_arguments:
+            merged_arguments["locale"] = session.locale
         if require_confirmation:
             logger.warning(
                 "Tool invocation requires explicit confirmation: %s",
@@ -84,7 +98,7 @@ class AgentRuntime:
             session_id,
             tool_name,
         )
-        result = self.executor.execute(tool_name, arguments)
+        result = self.executor.execute(tool_name, merged_arguments)
         return result
 
     def close_session(self, session_id: str) -> None:

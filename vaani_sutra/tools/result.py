@@ -11,6 +11,9 @@ class ToolExecutionStatus(str, Enum):
     NOT_FOUND = "not_found"
     REQUIRES_CONFIRMATION = "requires_confirmation"
     TIMEOUT = "timeout"
+    NOT_CONFIGURED = "not_configured"
+    AMBIGUOUS_LOCATION = "ambiguous_location"
+    INVALID_INPUT = "invalid_input"
 
 
 @dataclass(frozen=True)

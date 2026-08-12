@@ -65,6 +65,27 @@ class ToolExecutor:
         try:
             result = future.result(timeout=tool.metadata.timeout_seconds)
             latency = time.time() - start
+            if isinstance(result, dict) and "success" in result:
+                success = bool(result.get("success"))
+                verified = bool(result.get("verified", success))
+                status_value = str(result.get("status", "")).strip().lower()
+                try:
+                    status = ToolExecutionStatus(status_value) if status_value else (
+                        ToolExecutionStatus.SUCCESS if success else ToolExecutionStatus.FAILURE
+                    )
+                except Exception:
+                    status = ToolExecutionStatus.SUCCESS if success else ToolExecutionStatus.FAILURE
+                logger.info("Tool %s executed in %.3fs", tool_name, latency)
+                return ToolExecutionResult(
+                    success=success,
+                    tool=tool_name,
+                    data=result,
+                    error=result.get("error") if not success else None,
+                    verified=verified,
+                    status=status,
+                    latency_seconds=latency,
+                )
+
             logger.info("Tool %s executed in %.3fs", tool_name, latency)
             return ToolExecutionResult(
                 success=True,

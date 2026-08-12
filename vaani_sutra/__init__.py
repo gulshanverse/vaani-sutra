@@ -1,5 +1,6 @@
 from .agent.runtime import AgentRuntime
 from .agent.session import Session, SessionState
+from .memory import MemoryManager, MemoryPolicy, MemoryCategory, MemoryScope, SQLiteMemoryStore
 from .agent.result import ToolExecutionResult, ToolExecutionStatus
 from .integrations.host import HostApplicationContext
 from .platform import VaaniSutraPlatform
@@ -16,6 +17,11 @@ __all__ = [
     "ToolExecutionStatus",
     "HostApplicationContext",
     "VaaniSutraPlatform",
+    "MemoryManager",
+    "MemoryPolicy",
+    "MemoryCategory",
+    "MemoryScope",
+    "SQLiteMemoryStore",
     "Tool",
     "ToolMetadata",
     "ToolInputSchema",
