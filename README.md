@@ -2,7 +2,7 @@
 
 **Where Intelligence Finds Its Voice.**
 
-Vaani Sutra is a real-time AI voice support agent designed to connect customer conversations to Google Gemini Realtime through VideoSDK agents. It is built for multilingual customer support, voice-based interaction, and a production-ready environment with secure configuration handling.
+Vaani is a real-time AI voice support agent designed to connect customer conversations to Google Gemini Realtime through VideoSDK agents. It is built for multilingual customer support, voice-based interaction, and a production-ready environment with secure configuration handling.
 
 The project now also includes real local capabilities for live weather, configurable web search, and persistent memory through the Vaani Sutra tool architecture.
 
