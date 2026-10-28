@@ -1,4 +1,4 @@
-# Vaani Sutra — वाणी सूत्र
+# Vaani Sutra - वाणी सूत्र
 
 **Where Intelligence Finds Its Voice.**
 
